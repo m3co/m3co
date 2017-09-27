@@ -2,21 +2,23 @@
 # Leer el TCL Style
 # Escribir pruebas para este deserializador
 
-# Convierte una string en un dict
+# Convierte una string tipo CTA en un array
 #
+# PARAMS
 # string - cadena a deserializar
-# result - dict que contiene la string convertida en dict
+#
+# RETURN array
 proc deserialize { string result } {
-  # Muestre como serializar el dict
-  upvar $result r
-  set r [dict create]
+  # Muestre como serializar el array
+  array set result {}
   set key ""
   foreach step $string {
     if { $key == "" } {
       set key $step
     } else {
-      dict set r $key $step
+      set result($key) $step
       set key ""
     }
   }
+  return [array get result]
 }
