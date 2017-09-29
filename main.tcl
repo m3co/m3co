@@ -30,6 +30,17 @@ namespace eval labelentry {
   }
   variable lastEdit
 
+  proc setup { config entry } {
+    array set entr [deserialize $entry]
+    array set conf [deserialize $config]
+
+    set label [label $conf(frame).label -text [expr { \
+      $entr($conf(key)) != "" ? $entr($conf(key)) : "-" }]]
+    bind $label <1> "labelentry::'begin'redact %W {[array get conf]} \
+      {[array get entr]}"
+    pack $label -side left
+  }
+
   proc 'end'redact { {text ""} } {
     variable lastEdit
     if { $lastEdit(input) != "" } {
@@ -52,7 +63,7 @@ namespace eval labelentry {
     labelentry::'end'redact ...
   }
 
-  proc 'begin'redact { config entry } {
+  proc 'begin'redact { el config entry } {
     variable lastEdit
     labelentry::'end'redact
     array set entr [deserialize $entry]
@@ -60,7 +71,6 @@ namespace eval labelentry {
 
     set key $conf(key)
     set frame $conf(frame)
-    set el $conf(el)
 
     array set event {
       query update
