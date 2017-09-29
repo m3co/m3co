@@ -43,17 +43,9 @@ namespace eval labelentry {
     set lastEdit(label) ""
   }
 
-  proc update { el key entry } {
+  proc update { el key e } {
     global chan
-    array set event {
-      query update
-      from Supplies
-      module Supplies
-    }
-
-    set event(key) $key
-    set event(idkey) Supplies.id
-    set event(id) [dict get [deserialize $entry] Supplies.id]
+    array set event [deserialize $e]
     set event(value) [$el get]
 
     chan puts $chan [array get event]
@@ -65,11 +57,21 @@ namespace eval labelentry {
     labelentry::'end'redact
     array set entry [deserialize $e]
 
+    array set event {
+      query update
+      from Supplies
+      module Supplies
+    }
+
+    set event(key) $key
+    set event(idkey) Supplies.id
+    set event(id) $entry(Supplies.id)
+
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input]
     $lastEdit(input) insert 0 $entry($key)
     bind $lastEdit(input) <FocusOut> "labelentry::'end'redact $entry($key)"
-    bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get entry]}"
+    bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
   }
