@@ -52,25 +52,30 @@ namespace eval labelentry {
     labelentry::'end'redact ...
   }
 
-  proc 'begin'redact { el frame key e } {
+  proc 'begin'redact { config entry } {
     variable lastEdit
     labelentry::'end'redact
-    array set entry [deserialize $e]
+    array set entr [deserialize $entry]
+    array set conf [deserialize $config]
+
+    set key $conf(key)
+    set frame $conf(frame)
+    set el $conf(el)
 
     array set event {
       query update
-      from Supplies
-      module Supplies
     }
+    set event(from) $conf(from)
+    set event(module) $conf(module)
 
+    set event(idkey) $conf(idkey)
     set event(key) $key
-    set event(idkey) Supplies.id
-    set event(id) $entry(Supplies.id)
+    set event(id) $entr($conf(idkey))
 
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input]
-    $lastEdit(input) insert 0 $entry($key)
-    bind $lastEdit(input) <FocusOut> "labelentry::'end'redact $entry($key)"
+    $lastEdit(input) insert 0 $entr($key)
+    bind $lastEdit(input) <FocusOut> "labelentry::'end'redact $entr($key)"
     bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
