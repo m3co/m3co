@@ -81,6 +81,7 @@ namespace eval labelentry {
     set event(idkey) $conf(idkey)
     set event(key) $key
     set event(id) $entr($conf(idkey))
+    set event(entry) $entry
 
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input]
