@@ -86,7 +86,7 @@ namespace eval labelentry {
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input]
     $lastEdit(input) insert 0 $entr($key)
-    bind $lastEdit(input) <FocusOut> "labelentry::'end'redact $entr($key)"
+    bind $lastEdit(input) <FocusOut> "labelentry::'end'redact {$entr($key)}"
     bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
