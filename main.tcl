@@ -96,7 +96,7 @@ namespace eval labelentry {
 namespace eval extendcombo {
 
   proc setup { path } {
-    bind $path <KeyRelease> +[list show'listbox $path]
+    bind $path <KeyRelease> +[list extendcombo::show'listbox $path %K]
   }
 
   proc do'autocomplete {path key} {
