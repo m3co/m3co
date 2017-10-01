@@ -92,3 +92,39 @@ namespace eval labelentry {
     pack $lastEdit(input) -fill x -expand true
   }
 }
+
+namespace eval extendcombo {
+
+  proc setup { path } {
+    bind $path <KeyRelease> +[list show'listbox $path]
+  }
+
+  proc do'autocomplete {path key} {
+    #
+    # autocomplete a string in the ttk::combobox from the list of values
+    #
+    # Any key string with more than one character and is not entirely
+    # lower-case is considered a function key and is thus ignored.
+    #
+    # path -> path to the combobox
+    #
+    if {[string length $key] > 1 && [string tolower $key] != $key} {return}
+    set text [string map [list {[} {\[} {]} {\]}] [$path get]]
+    if {[string equal $text ""]} {return}
+    set values [$path cget -values]
+    set x [lsearch $values $text*]
+    if {$x < 0} {return}
+    set index [$path index insert]
+    $path set [lindex $values $x]
+    $path icursor $index
+    $path selection range insert end
+  }
+
+  proc show'listbox { path key } {
+    ttk::combobox::Post $path
+    update idletasks
+    focus $path
+    do'autocomplete $path $key
+  }
+
+}
