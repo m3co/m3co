@@ -37,8 +37,7 @@ namespace eval labelentry {
     set label $conf(frame).label
     set text [expr { $entr($conf(key)) != "" ? $entr($conf(key)) : "-" }]
     if { [winfo exists $label] == 0 } {
-      label $label
-      pack $label -side left
+      pack [label $label] -side left
     }
     $label configure -text $text
     bind $label <1> "labelentry::'begin'redact %W {[array get conf]} \
