@@ -34,11 +34,15 @@ namespace eval labelentry {
     array set entr [deserialize $entry]
     array set conf [deserialize $config]
 
-    set label [label $conf(frame).label -text [expr { \
-      $entr($conf(key)) != "" ? $entr($conf(key)) : "-" }]]
+    set label $conf(frame).label
+    set text [expr { $entr($conf(key)) != "" ? $entr($conf(key)) : "-" }]
+    if { [winfo exists $label] == 0 } {
+      label $label
+      pack $label -side left
+    }
+    $label configure -text $text
     bind $label <1> "labelentry::'begin'redact %W {[array get conf]} \
       {[array get entr]}"
-    pack $label -side left
   }
 
   proc 'end'redact { {text ""} } {
