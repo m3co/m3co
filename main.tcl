@@ -55,11 +55,10 @@ namespace eval labelentry {
   }
 
   proc update { el key e } {
-    global chan
     array set event [deserialize $e]
     set event(value) [$el get]
 
-    chan puts $chan [array get event]
+    chan puts $MAIN::chan [array get event] ;## OJO CON ESTE ERROR!
     labelentry::'end'redact ...
   }
 
