@@ -50,8 +50,10 @@ namespace eval labelentry {
       destroy $lastEdit(input)
     }
     if { $lastEdit(label) != "" } {
-      $lastEdit(label) configure -text $text
       pack $lastEdit(label) -side left
+    }
+    if { $text != "" } {
+      $lastEdit(label) configure -text $text
     }
     set lastEdit(input) ""
     set lastEdit(label) ""
@@ -88,7 +90,6 @@ namespace eval labelentry {
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input]
     $lastEdit(input) insert 0 $entr($key)
-    bind $lastEdit(input) <FocusOut> "labelentry::'end'redact {$entr($key)}"
     bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
