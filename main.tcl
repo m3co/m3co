@@ -92,6 +92,7 @@ namespace eval labelentry {
     bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
+    focus $lastEdit(input)
   }
 }
 
