@@ -47,13 +47,17 @@ namespace eval labelentry {
   proc 'end'redact { {text ""} } {
     variable lastEdit
     if { $lastEdit(input) != "" } {
-      destroy $lastEdit(input)
+      if { [winfo exists $lastEdit(input)] == 1 } {
+        destroy $lastEdit(input)
+      }
     }
     if { $lastEdit(label) != "" } {
-      pack $lastEdit(label) -side left
-    }
-    if { $text != "" } {
-      $lastEdit(label) configure -text $text
+      if { [winfo exists $lastEdit(label)] == 1 } {
+        pack $lastEdit(label) -side left
+        if { $text != "" } {
+          $lastEdit(label) configure -text $text
+        }
+      }
     }
     set lastEdit(input) ""
     set lastEdit(label) ""
