@@ -65,6 +65,10 @@ namespace eval labelentry {
 
   proc update { el key e } {
     array set event [deserialize $e]
+    if { [dict get $event(entry) $key] == [$el get] } {
+      labelentry::'end'redact [$el get]
+      return
+    }
     set event(value) [$el get]
 
     chan puts $MAIN::chan [array get event] ;## OJO CON ESTE ERROR!
