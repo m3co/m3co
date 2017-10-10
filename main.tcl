@@ -40,8 +40,8 @@ namespace eval labelentry {
       pack [label $label] -side left
     }
     $label configure -text $text
-    bind $label <1> "labelentry::'begin'redact %W {[array get conf]} \
-      {[array get entr]}"
+    bind $label <1> [list labelentry::'begin'redact %W [array get conf] \
+      [array get entr]]
   }
 
   proc 'end'redact { {text ""} } {
@@ -98,7 +98,8 @@ namespace eval labelentry {
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input -width 0]
     $lastEdit(input) insert 0 $entr($key)
-    bind $lastEdit(input) <Return> "labelentry::update %W $key {[array get event]}"
+    bind $lastEdit(input) <Return> [list labelentry::update %W $key \
+      [array get event]]
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
     focus $lastEdit(input)
