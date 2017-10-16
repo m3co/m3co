@@ -164,9 +164,9 @@ proc format'currency {num {sep ,}} {
   # If $decimal is zero, then assign the default value of .00
   # and glue the formatted $decimal to the whole number ($whole)
   if { $decimal == 0} {
-      set num $whole.00
+      set num $whole; #.00
   } else {
-      set num $whole$decimal
+      #set num $whole$decimal
   }
 
   # Take given number and insert commas every 3 positions
