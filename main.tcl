@@ -35,7 +35,7 @@ namespace eval labelentry {
     array set conf [deserialize $config]
 
     set label $conf(frame).label
-    set text [expr { $entr($conf(key)) != "" ? \
+    set text [expr { ($entr($conf(key)) != "" && $entr($conf(key)) != "null") ? \
       [array get conf currency] == "currency true" ? \
       "\$[format'currency $entr($conf(key))]" : \
       $entr($conf(key)) : "-" }]
@@ -100,7 +100,7 @@ namespace eval labelentry {
 
     set lastEdit(label) $el
     set lastEdit(input) [entry $frame.input -width 0]
-    $lastEdit(input) insert 0 $entr($key)
+    $lastEdit(input) insert 0 [expr { $entr($key) == "null" ? "" : $entr($key) }]
     bind $lastEdit(input) <Return> [list labelentry::update %W $key \
       [array get event]]
     pack forget $el
