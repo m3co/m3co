@@ -147,6 +147,7 @@ namespace eval extendcombo {
 
 proc format'currency {num {sep ,}} {
   if { $num == "" } return
+  if { $num == "null" } return
   # Find the whole number and decimal (if any)
   set whole [expr int($num)]
   set decimal [expr $num - int($num)]
