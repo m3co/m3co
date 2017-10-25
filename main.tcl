@@ -115,7 +115,7 @@ namespace eval labelentry {
     set event(row) $row
 
     set lastEdit(label) $el
-    set lastEdit(input) [row $frame.input -width 0]
+    set lastEdit(input) [entry $frame.input -width 0]
     $lastEdit(input) insert 0 [expr { $entr($key) == "null" ? "" : $entr($key) }]
     bind $lastEdit(input) <Return> [list labelentry::update %W $key \
       [array get event]]
