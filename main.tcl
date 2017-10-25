@@ -37,10 +37,11 @@ namespace eval labelentry {
     set label $conf(frame).label
     set text [expr { ($entr($conf(key)) != "" && $entr($conf(key)) != "null") ? \
       [array get conf currency] == "currency true" ? \
-      "\$[format'currency $entr($conf(key))]" : \
+      "[expr { [array get conf dollar] == "dollar true" ? "\$" : "" }][format'currency $entr($conf(key))]" : \
       $entr($conf(key)) : "-" }]
     if { [winfo exists $label] == 0 } {
-      pack [label $label] -side left
+      pack [label $label] -side [expr { \
+        [array get conf currency] == "currency true" ? "right" : "left" }]
     }
     $label configure -text $text
     bind $label <1> [list labelentry::'begin'redact %W [array get conf] \
