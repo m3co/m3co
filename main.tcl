@@ -30,14 +30,29 @@ namespace eval labelentry {
   }
   variable lastEdit
 
-  proc setup { config entry } {
-    array set entr [deserialize $entry]
+  # Configura el labelentry
+  # A modo de ejemplo se expone "config"
+  #
+  #  array set conf [list \
+  #    from Preliminars \
+  #    module Preliminars \
+  #    idkey id \
+  #    key $param \
+  #    frame $base.$param.$id \ # setup se encarga de crear ese $frame.label
+  #    currency false \
+  #    dollar false
+  #  ]
+  #
+  # row es la linea a redactar y por lo general se escribe como $response(row)
+  proc setup { config row } {
+    array set entr [deserialize $row]
     array set conf [deserialize $config]
 
     set label $conf(frame).label
     set text [expr { ($entr($conf(key)) != "" && $entr($conf(key)) != "null") ? \
       [array get conf currency] == "currency true" ? \
-      "[expr { [array get conf dollar] == "dollar true" ? "\$" : "" }][format'currency $entr($conf(key))]" : \
+      "[expr { [array get conf dollar] == "dollar true" ? \
+      "\$" : "" }][format'currency $entr($conf(key))]" : \
       $entr($conf(key)) : "-" }]
     if { [winfo exists $label] == 0 } {
       pack [label $label] -side [expr { \
@@ -69,7 +84,7 @@ namespace eval labelentry {
 
   proc update { el key e } {
     array set event [deserialize $e]
-    if { [dict get $event(entry) $key] == [$el get] } {
+    if { [dict get $event(row) $key] == [$el get] } {
       labelentry::'end'redact [$el get]
       return
     }
@@ -79,10 +94,10 @@ namespace eval labelentry {
     labelentry::'end'redact ...
   }
 
-  proc 'begin'redact { el config entry } {
+  proc 'begin'redact { el config row } {
     variable lastEdit
     labelentry::'end'redact
-    array set entr [deserialize $entry]
+    array set entr [deserialize $row]
     array set conf [deserialize $config]
 
     set key $conf(key)
@@ -97,10 +112,10 @@ namespace eval labelentry {
     set event(idkey) $conf(idkey)
     set event(key) $key
     set event(id) $entr($conf(idkey))
-    set event(entry) $entry
+    set event(row) $row
 
     set lastEdit(label) $el
-    set lastEdit(input) [entry $frame.input -width 0]
+    set lastEdit(input) [row $frame.input -width 0]
     $lastEdit(input) insert 0 [expr { $entr($key) == "null" ? "" : $entr($key) }]
     bind $lastEdit(input) <Return> [list labelentry::update %W $key \
       [array get event]]
