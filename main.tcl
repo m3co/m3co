@@ -63,8 +63,9 @@ namespace eval labelentry {
       [array get entr]]
   }
 
-  proc 'end'redact { {text ""} } {
+  proc 'end'redact { c {text ""} } {
     variable lastEdit
+    array set config [deserialize $c]
     if { $lastEdit(input) != "" } {
       if { [winfo exists $lastEdit(input)] == 1 } {
         destroy $lastEdit(input)
@@ -72,7 +73,11 @@ namespace eval labelentry {
     }
     if { $lastEdit(label) != "" } {
       if { [winfo exists $lastEdit(label)] == 1 } {
-        pack $lastEdit(label) -side left
+        if { [array get config currency] == "currency true" } {
+          pack $lastEdit(label) -side right
+        } else {
+          pack $lastEdit(label) -side left
+        }
         if { $text != "" } {
           $lastEdit(label) configure -text $text
         }
@@ -82,21 +87,21 @@ namespace eval labelentry {
     set lastEdit(label) ""
   }
 
-  proc update { el key e } {
+  proc update { el key e c } {
     array set event [deserialize $e]
     if { [dict get $event(row) $key] == [$el get] } {
-      labelentry::'end'redact [$el get]
+      labelentry::'end'redact $c [$el get]
       return
     }
     set event(value) [$el get]
 
     chan puts $MAIN::chan [array get event] ;## OJO CON ESTE ERROR!
-    labelentry::'end'redact ...
+    labelentry::'end'redact $c ...
   }
 
   proc 'begin'redact { el config row } {
     variable lastEdit
-    labelentry::'end'redact
+    labelentry::'end'redact $config
     array set entr [deserialize $row]
     array set conf [deserialize $config]
 
@@ -118,7 +123,7 @@ namespace eval labelentry {
     set lastEdit(input) [entry $frame.input -width 0]
     $lastEdit(input) insert 0 [expr { $entr($key) == "null" ? "" : $entr($key) }]
     bind $lastEdit(input) <Return> [list labelentry::update %W $key \
-      [array get event]]
+      [array get event] [array get conf]]
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
     focus $lastEdit(input)
