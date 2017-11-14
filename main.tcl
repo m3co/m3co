@@ -198,3 +198,25 @@ proc format'currency {num {sep ,}} {
   # Were done; give the result back
   return $num
 }
+
+proc connect { ns } {
+  namespace eval $ns {
+   #set chan [socket {x12.m3c.space} 12345]
+    set chan [socket localhost       12345]
+
+    chan configure $chan -encoding utf-8 -blocking 0 -buffering line
+    chan event $chan readable "[namespace current]::handle'event"
+
+    proc handle'event { } {
+      variable chan
+      chan gets $chan data
+      if { $data == "" } {
+        return
+      }
+      array set response [deserialize $data]
+      #puts "\nresponse:"
+      #parray response
+      $response(module)::'do'$response(query) response
+    }
+  }
+}
