@@ -220,3 +220,13 @@ proc connect { ns } {
     }
   }
 }
+
+proc howmanymonths { d1 d2 } {
+  set c $d1
+  set i 1
+  while { $c < $d2 } {
+    set c [clock add $c 1 months]
+    incr i
+  }
+  return $i
+}
