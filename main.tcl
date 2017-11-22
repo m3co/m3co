@@ -23,6 +23,12 @@ proc deserialize { string } {
   return [array get result]
 }
 
+proc lremove {listVariable value} {
+  upvar 1 $listVariable var
+  set idx [lsearch -exact $var $value]
+  set var [lreplace $var $idx $idx]
+}
+
 namespace eval labelentry {
   array set lastEdit {
     label ""
