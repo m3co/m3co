@@ -220,13 +220,9 @@ proc connect { ns } {
         return
       }
       array set response [deserialize $data]
-      #puts "\nresponse:"
-      #parray response
-      if { [$response(module)::'do'$response(query) response] == "await-next" } {
-        chan configure $chan -buffering full -translation binary
-        $response(module)::'do'$response(query)'next [chan read $chan]
-        chan configure $chan -buffering line -translation auto
-      }
+      puts "\nresponse:"
+      parray response
+      $response(module)::'do'$response(query) response
     }
   }
 }
