@@ -223,11 +223,9 @@ proc connect { ns } {
       #puts "\nresponse:"
       #parray response
       if { [$response(module)::'do'$response(query) response] == "await-next" } {
-        chan configure $chan -encoding utf-8 -blocking 1 \
-          -buffering full -translation binary
-        $response(module)::'do'$response(query)'next [chan read -nonewline $chan]
-        chan configure $chan -encoding utf-8 -blocking 0 \
-          -buffering line -translation auto
+        chan configure $chan -buffering full -translation binary
+        $response(module)::'do'$response(query)'next [chan read $chan]
+        chan configure $chan -buffering line -translation auto
       }
     }
   }
