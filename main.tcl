@@ -236,3 +236,11 @@ proc howmanymonths { d1 d2 } {
   }
   return $i
 }
+
+proc sendfile { chan filepath } {
+  set fp [open $filepath]
+  fconfigure $fp -translation binary
+  fconfigure $chan -translation binary
+  fcopy $fp $chan; # Esto es para enviar archivos binarios
+  close $fp
+}
