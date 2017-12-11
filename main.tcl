@@ -99,7 +99,7 @@ namespace eval labelentry {
       labelentry::'end'redact $c [$el get]
       return
     }
-    set event(value) [$el get]
+    set event(value) "{[$el get]}"
 
     chan puts $MAIN::chan [array get event] ;## OJO CON ESTE ERROR!
     labelentry::'end'redact $c ...
