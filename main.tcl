@@ -95,7 +95,8 @@ namespace eval labelentry {
 
   proc update { el key e c } {
     array set event [deserialize $e]
-    if { [dict get $event(row) $key] == [$el get] } {
+    array set row [deserialize $event(row)]
+    if { $row($key) == [$el get] } {
       labelentry::'end'redact $c [$el get]
       return
     }
