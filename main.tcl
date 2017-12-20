@@ -245,3 +245,14 @@ proc sendfile { chan filepath } {
   fcopy $fp $chan; # Esto es para enviar archivos binarios
   close $fp
 }
+
+proc isnumeric value {
+  if {![catch {expr {abs($value)}}]} {
+    return 1
+  }
+  set value [string trimleft $value 0]
+  if {![catch {expr {abs($value)}}]} {
+    return 1
+  }
+  return 0
+}
