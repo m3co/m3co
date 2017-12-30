@@ -256,3 +256,32 @@ proc isnumeric value {
   }
   return 0
 }
+
+
+package require json::write
+json::write indented 0
+proc toJSON { row description } {
+  set json_to_eval [list]
+  foreach key [dict keys $description] {
+    set jsontype [dict get [dict get $description $key] jsontype]
+    set value [dict get $row $key]
+    if { $jsontype == "string" } {
+      lappend json_to_eval $key [json::write string $value]
+    } elseif { $jsontype == "boolean" } {
+      if { $value == "" } {
+        lappend json_to_eval $key null
+      } elseif { $value } {
+        lappend json_to_eval $key true
+      } else {
+        lappend json_to_eval $key false
+      }
+    } else {
+      if { $value == "" } {
+        lappend json_to_eval $key null
+      } else {
+        lappend json_to_eval $key [dict get $row $key]
+      }
+    }
+  }
+  return [eval "json::write object $json_to_eval"]
+}
