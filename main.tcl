@@ -270,6 +270,8 @@ proc toJSON { row description } {
     } elseif { $jsontype == "boolean" } {
       if { $value == "" } {
         lappend json_to_eval $key null
+      } elseif { $value == "null" } {
+        lappend json_to_eval $key null
       } elseif { $value } {
         lappend json_to_eval $key true
       } else {
