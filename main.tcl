@@ -206,6 +206,7 @@ proc format'currency {num {sep ,}} {
   return $num
 }
 
+package require json
 proc connect { ns } {
   namespace eval $ns {
    #set chan [socket {x12.m3c.space} 12345]
@@ -220,7 +221,7 @@ proc connect { ns } {
       if { $data == "" } {
         return
       }
-      array set response [deserialize $data]
+      array set response [deserialize [json::json2dict $data]]
       puts "\nresponse:"
       parray response
       $response(module)::'do'$response(query) response
