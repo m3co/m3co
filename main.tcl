@@ -50,9 +50,10 @@ namespace eval labelentry {
   #  ]
   #
   # row es la linea a redactar y por lo general se escribe como $response(row)
-  proc setup { config row } {
+  proc setup { config row descr } {
     array set entr [deserialize $row]
     array set conf [deserialize $config]
+    array set description [deserialize $descr]
 
     set label $conf(frame).label
     set text [expr { ($entr($conf(key)) != "" && $entr($conf(key)) != "null") ? \
@@ -66,7 +67,7 @@ namespace eval labelentry {
     }
     $label configure -text $text
     bind $label <1> [list labelentry::'begin'redact %W [array get conf] \
-      [array get entr]]
+      [array get entr] [array get description]]
   }
 
   proc 'end'redact { c {text ""} } {
@@ -93,24 +94,41 @@ namespace eval labelentry {
     set lastEdit(label) ""
   }
 
-  proc update { el key e c } {
+  proc update { el key e c descr } {
+    array set description [deserialize $descr]
     array set event [deserialize $e]
     array set row [deserialize $event(row)]
     if { $row($key) == [$el get] } {
       labelentry::'end'redact $c [$el get]
       return
     }
-    set event(value) "{[$el get]}"
+    set id_to_json $event(id)
+    if { [dict get $description($event(idkey)) jsontype] == "string" } {
+      set id_to_json [json::write string $event(id)]
+    }
+    set event(value) [$el get]
+    if { [dict get $description($event(key)) jsontype] == "string" } {
+      set event(value) [json::write string [$el get]]
+    }
 
-    chan puts $MAIN::chan [array get event] ;## OJO CON ESTE ERROR!
+    chan puts $MAIN::chan [json::write object \
+      module [json::write string $event(module)] \
+      query [json::write string $event(query)] \
+      idkey [json::write string $event(idkey)] \
+      key [json::write string $event(key)] \
+      id $id_to_json \
+      value $event(value) \
+    ] ;# OJO CON ESTE ERROR, pues $MAIN::chan es una variable hard-coded
+
     labelentry::'end'redact $c ...
   }
 
-  proc 'begin'redact { el config row } {
+  proc 'begin'redact { el config row description } {
     variable lastEdit
     labelentry::'end'redact $config
     array set entr [deserialize $row]
     array set conf [deserialize $config]
+    array set descr [deserialize $description]
 
     set key $conf(key)
     set frame $conf(frame)
@@ -130,7 +148,7 @@ namespace eval labelentry {
     set lastEdit(input) [entry $frame.input -width 0]
     $lastEdit(input) insert 0 [expr { $entr($key) == "null" ? "" : $entr($key) }]
     bind $lastEdit(input) <Return> [list labelentry::update %W $key \
-      [array get event] [array get conf]]
+      [array get event] [array get conf] [array get descr]]
     pack forget $el
     pack $lastEdit(input) -fill x -expand true
     focus $lastEdit(input)
