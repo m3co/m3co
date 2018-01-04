@@ -115,9 +115,9 @@ namespace eval labelentry {
       module [json::write string $event(module)] \
       query [json::write string $event(query)] \
       idkey [json::write string $event(idkey)] \
-      key [json::write string $event(key)] \
+      key [json::write array [json::write string $event(key)]] \
       id $id_to_json \
-      value $event(value) \
+      value [json::write array $event(value)] \
     ] ;# OJO CON ESTE ERROR, pues $MAIN::chan es una variable hard-coded
 
     labelentry::'end'redact $c ...
