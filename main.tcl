@@ -158,7 +158,7 @@ namespace eval labelentry {
 namespace eval extendcombo {
 
   proc setup { path } {
-    bind $path <KeyRelease> +[list extendcombo::show'listbox %W %K]
+    ##bind $path <KeyRelease> +[list extendcombo::show'listbox %W %K]
   }
 
   proc do'autocomplete {path key} {
@@ -185,8 +185,8 @@ namespace eval extendcombo {
   proc show'listbox { path key } {
     ttk::combobox::Post $path
     update idletasks
-    focus $path
-    do'autocomplete $path $key
+    ##focus $path
+    ##do'autocomplete $path $key
   }
 
 }
