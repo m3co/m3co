@@ -229,21 +229,74 @@ proc connect { ns } {
   namespace eval $ns {
    #set chan [socket {x12.m3c.space} 12345]
     set chan [socket localhost       12345]
+    set lasttime [clock seconds]
 
     chan configure $chan -encoding utf-8 -blocking 0 -buffering line
     chan event $chan readable "[namespace current]::handle'event"
 
     proc handle'event { } {
       variable chan
-      chan gets $chan data
+      variable lasttime [clock seconds]
+      if { [chan gets $chan data] == -1 } {
+        puts "error..."
+        chan event $chan readable {}
+        chan close $chan
+        [namespace current]::reconnect
+        return
+      }
+      puts "handle'event"
       if { $data == "" } {
         return
       }
       array set response [deserialize [json::json2dict $data]]
+      if [info exists response(action)] {
+        if { $response(action) == "check-conn" } {
+          chan puts $chan ""
+          puts "check-conn"
+          return
+        }
+      }
       puts "\nresponse:"
       parray response
       $response(module)::'do'$response(query) response
     }
+
+    proc reconnect { } {
+      variable chan
+      catch {
+        puts "reset... 1"
+        chan event $chan readable {}
+        puts "reset... 2"
+        close $chan
+        puts "reset... 3"
+      }
+      catch {
+        puts "reconnecting... 1"
+        set chan [socket localhost 12345]
+        puts "reconnecting... 2"
+        chan configure $chan -encoding utf-8 -blocking 0 -buffering line
+        puts "reconnecting... 3"
+        chan event $chan readable "[namespace current]::handle'event"
+        puts "reconnecting... 4"
+      }
+    }
+
+    proc interval { } {
+      variable chan
+      variable lasttime
+      set now [clock seconds]
+
+      puts "interval $chan $lasttime $now"
+      update idletasks
+      after 1000 "[namespace current]::interval"
+      if { [expr { $now - $lasttime }] > 3 } {
+        puts "> 3"
+        if { [catch { chan puts $chan "" }] } {
+          [namespace current]::reconnect
+        }
+      }
+    }
+    interval
   }
 }
 
