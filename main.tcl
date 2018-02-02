@@ -229,22 +229,34 @@ package require json
 proc connect { ns } {
   namespace eval $ns {
     global myserver
-    set chan [socket $myserver 12345]
+    set chan [socket -async $myserver 12345]
     set lasttime [clock seconds]
 
     chan configure $chan -encoding utf-8 -blocking 0 -buffering line
     chan event $chan readable "[namespace current]::handle'event"
 
+    set flagempty 0
     proc handle'event { } {
+      variable flagempty
       variable chan
       variable lasttime [clock seconds]
-      if { [chan gets $chan data] == -1 } {
-        chan event $chan readable {}
-        chan close $chan
-        [namespace current]::reconnect
-        return
+      set res -1
+      set data ""
+      catch { set res [chan gets $chan data] }
+      if { $res == -1 } {
+        if { $flagempty == 1 } {
+          chan event $chan readable {}
+          chan close $chan
+          return
+        }
+        if { $data == "" } {
+          set flagempty 1
+          return
+        }
       }
+      set flagempty 0
       if { $data == "" } {
+        update idletasks
         return
       }
       array set response [deserialize [json::json2dict $data]]
@@ -254,8 +266,8 @@ proc connect { ns } {
           return
         }
       }
-      puts "\nresponse:"
-      parray response
+      #puts "\nresponse:"
+      #parray response
       $response(module)::'do'$response(query) response
     }
 
@@ -271,7 +283,7 @@ proc connect { ns } {
       }
       catch {
         puts "reconnecting... 1"
-        set chan [socket $myserver 12345]
+        set chan [socket -async $myserver 12345]
         puts "reconnecting... 2"
         chan configure $chan -encoding utf-8 -blocking 0 -buffering line
         puts "reconnecting... 3"
