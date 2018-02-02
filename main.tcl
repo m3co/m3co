@@ -224,11 +224,12 @@ proc format'currency {num {sep ,}} {
   return $num
 }
 
+set myserver {localhost}
 package require json
 proc connect { ns } {
   namespace eval $ns {
-   #set chan [socket {x12.m3c.space} 12345]
-    set chan [socket localhost       12345]
+    global myserver
+    set chan [socket $myserver 12345]
     set lasttime [clock seconds]
 
     chan configure $chan -encoding utf-8 -blocking 0 -buffering line
@@ -260,6 +261,7 @@ proc connect { ns } {
 
     proc reconnect { } {
       variable chan
+      global myserver
       catch {
         puts "reset... 1"
         chan event $chan readable {}
@@ -269,7 +271,7 @@ proc connect { ns } {
       }
       catch {
         puts "reconnecting... 1"
-        set chan [socket localhost 12345]
+        set chan [socket $myserver 12345]
         puts "reconnecting... 2"
         chan configure $chan -encoding utf-8 -blocking 0 -buffering line
         puts "reconnecting... 3"
