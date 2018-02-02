@@ -238,13 +238,11 @@ proc connect { ns } {
       variable chan
       variable lasttime [clock seconds]
       if { [chan gets $chan data] == -1 } {
-        puts "error..."
         chan event $chan readable {}
         chan close $chan
         [namespace current]::reconnect
         return
       }
-      puts "handle'event"
       if { $data == "" } {
         return
       }
@@ -252,7 +250,6 @@ proc connect { ns } {
       if [info exists response(action)] {
         if { $response(action) == "check-conn" } {
           chan puts $chan ""
-          puts "check-conn"
           return
         }
       }
@@ -286,11 +283,9 @@ proc connect { ns } {
       variable lasttime
       set now [clock seconds]
 
-      puts "interval $chan $lasttime $now"
       update idletasks
       after 1000 "[namespace current]::interval"
       if { [expr { $now - $lasttime }] > 3 } {
-        puts "> 3"
         if { [catch { chan puts $chan "" }] } {
           [namespace current]::reconnect
         }
