@@ -54,6 +54,7 @@ namespace eval labelentry {
     array set entr [deserialize $row]
     array set conf [deserialize $config]
     array set description [deserialize $descr]
+    set bg [array get conf bg]
 
     set label $conf(frame).label
     set text [expr { ($entr($conf(key)) != "" && $entr($conf(key)) != "null") ? \
@@ -66,6 +67,9 @@ namespace eval labelentry {
         [array get conf currency] == "currency true" ? "right" : "left" }]
     }
     $label configure -text $text
+    if { $bg != "" } {
+      $label configure -bg $conf(bg)
+    }
     bind $label <1> [list labelentry::'begin'redact %W [array get conf] \
       [array get entr] [array get description]]
   }
