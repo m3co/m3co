@@ -68,7 +68,7 @@ namespace eval labelentry {
     }
     $label configure -text $text
     if { $bg != "" } {
-      $label configure -bg $conf(bg)
+      $label configure -fg $conf(bg)
     }
     bind $label <1> [list labelentry::'begin'redact %W [array get conf] \
       [array get entr] [array get description]]
